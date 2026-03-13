@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+uploads/*
+!uploads/.gitkeep
+logs/*
+!logs/.gitkeep
+*.log
+coverage/
+seed_output.txt
+seed.ts
