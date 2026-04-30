@@ -9,7 +9,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Plus, UserPlus, LogOut, Trash2, Mail, CheckCircle2, XCircle } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import toast from 'react-hot-toast';
-import type { Team, TeamInvite, User } from '@/types';
+import type { Team, TeamInvite, User, TeamMember } from '@/types';
 import { getErrorMessage } from '@/types';
 
 const MyTeamPage: React.FC = () => {

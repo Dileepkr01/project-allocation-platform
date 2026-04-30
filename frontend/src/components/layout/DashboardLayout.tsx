@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Bell, Check, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { notificationService } from '@/services/notificationService';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import type { Notification } from '@/types';
 
 export const DashboardLayout: React.FC = () => {
@@ -67,62 +68,65 @@ export const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream-100 dark:bg-slate-900 transition-colors">
       <Sidebar />
       <div className="ml-64">
-        <header className="bg-white border-b sticky top-0 z-20 px-6 py-3 flex items-center justify-between">
+        <header className="bg-cream-50 dark:bg-slate-800 border-b border-cream-300 dark:border-slate-700 sticky top-0 z-20 px-6 py-3 flex items-center justify-between transition-colors">
           <div>
-            <p className="text-sm text-gray-500">Welcome back,</p>
-            <h2 className="text-lg font-semibold text-gray-900">{user?.firstName} {user?.lastName}</h2>
+            <p className="text-sm text-stone-500 dark:text-slate-400">Welcome back,</p>
+            <h2 className="text-lg font-semibold text-stone-800 dark:text-white">{user?.firstName} {user?.lastName}</h2>
           </div>
-          <div className="relative" ref={panelRef}>
-            <button onClick={openPanel} className="relative p-2 hover:bg-gray-100 rounded-full transition-colors" id="notification-bell">
-              <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-blue-600' : 'text-gray-600'}`} />
-              {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              )}
-            </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle variant="dashboard" />
+            <div className="relative" ref={panelRef}>
+              <button onClick={openPanel} className="relative p-2 hover:bg-cream-200 dark:hover:bg-slate-700 rounded-full transition-colors" id="notification-bell">
+                <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-slate-400'}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
 
-            {showPanel && (
-              <div className="absolute right-0 top-12 w-96 bg-white border rounded-xl shadow-2xl z-30 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
-                  <h3 className="font-semibold text-gray-900">Notifications</h3>
-                  {unreadCount > 0 && (
-                    <button onClick={markAllRead} className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800">
-                      <CheckCheck className="w-3.5 h-3.5" />Mark all read
-                    </button>
-                  )}
-                </div>
+              {showPanel && (
+                <div className="absolute right-0 top-12 w-96 bg-cream-50 dark:bg-slate-800 border border-cream-300 dark:border-slate-700 rounded-xl shadow-2xl z-30 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-cream-200 dark:border-slate-700 bg-cream-100 dark:bg-slate-700/50">
+                    <h3 className="font-semibold text-stone-800 dark:text-white">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <button onClick={markAllRead} className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                        <CheckCheck className="w-3.5 h-3.5" />Mark all read
+                      </button>
+                    )}
+                  </div>
 
-                <div className="max-h-96 overflow-y-auto divide-y">
-                  {loading ? (
-                    <div className="p-8 text-center text-sm text-gray-400">Loading...</div>
-                  ) : notifications.length === 0 ? (
-                    <div className="p-8 text-center text-sm text-gray-400">No notifications</div>
-                  ) : (
-                    notifications.map(n => (
-                      <div key={n.id}
-                        onClick={() => !n.isRead && markRead(n.id)}
-                        className={`px-4 py-3 cursor-pointer transition-colors hover:bg-gray-50 ${!n.isRead ? 'bg-blue-50/50' : ''}`}>
-                        <div className="flex items-start gap-3">
-                          <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${!n.isRead ? 'bg-blue-500' : 'bg-transparent'}`} />
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm ${!n.isRead ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>{n.title}</p>
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">{timeAgo(n.createdAt)}</p>
+                  <div className="max-h-96 overflow-y-auto divide-y divide-cream-200 dark:divide-slate-700">
+                    {loading ? (
+                      <div className="p-8 text-center text-sm text-gray-400 dark:text-slate-500">Loading...</div>
+                    ) : notifications.length === 0 ? (
+                      <div className="p-8 text-center text-sm text-gray-400 dark:text-slate-500">No notifications</div>
+                    ) : (
+                      notifications.map(n => (
+                        <div key={n.id}
+                          onClick={() => !n.isRead && markRead(n.id)}
+                          className={`px-4 py-3 cursor-pointer transition-colors hover:bg-cream-100 dark:hover:bg-slate-700/50 ${!n.isRead ? 'bg-amber-50/50 dark:bg-blue-500/5' : ''}`}>
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${!n.isRead ? 'bg-blue-500' : 'bg-transparent'}`} />
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm ${!n.isRead ? 'font-semibold text-stone-800 dark:text-white' : 'text-stone-600 dark:text-slate-300'}`}>{n.title}</p>
+                              <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 line-clamp-2">{n.message}</p>
+                              <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">{timeAgo(n.createdAt)}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </header>
-        <main className="p-6">
+        <main className="p-6 page-enter">
           <Outlet />
         </main>
       </div>
