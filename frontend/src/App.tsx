@@ -35,6 +35,9 @@ import ReviewPage from '@/pages/subadmin/ReviewPage';
 import NotificationsPage from '@/pages/NotificationsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import ChangePasswordPage from '@/pages/ChangePasswordPage';
+import CreateProposal from './pages/faculty/CreateProposal';
+import MyProjects from './pages/faculty/MyProjects';
+import TeamManagement from './pages/faculty/TeamManagement';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -94,8 +97,13 @@ const App: React.FC = () => (
         <Route path="/review" element={<ProtectedRoute roles={['SUBADMIN']}><ReviewPage /></ProtectedRoute>} />
 
         {/* Faculty */}
-        <Route path="/proposals" element={<ProtectedRoute roles={['FACULTY']}><FacultyDashboard /></ProtectedRoute>} />
-        <Route path="/my-projects" element={<ProtectedRoute roles={['FACULTY']}><FacultyDashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute roles={['FACULTY']}><FacultyDashboard /></ProtectedRoute>} />
+        <Route path="/faculty/proposals" element={<ProtectedRoute roles={['FACULTY']}><CreateProposal /></ProtectedRoute>} />
+        <Route path="/faculty/team-management" element={<ProtectedRoute roles={['FACULTY']}><TeamManagement /></ProtectedRoute>} />
+        {/* <Route path="/faculty/proposals" element={<ProtectedRoute roles={['FACULTY']}><FacultyProposalPage /></ProtectedRoute>} /> */}
+        {/* <Route path="/proposal/:id" element={<ProtectedRoute roles={['FACULTY']}><CreateProposal /></ProtectedRoute>} /> */}
+        
+        <Route path="/my-projects" element={<ProtectedRoute roles={['FACULTY']}><MyProjects /></ProtectedRoute>} />
 
         {/* Student */}
         <Route path="/projects" element={<ProtectedRoute roles={['STUDENT']}><BrowseProjectsPage /></ProtectedRoute>} />
