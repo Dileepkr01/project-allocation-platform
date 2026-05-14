@@ -1,10 +1,11 @@
+// frontend/src/components/layout/Sidebar.tsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import {
   LayoutDashboard, Users, FolderKanban, FileText, Bell,
   GraduationCap, BookOpen, ClipboardList, Lightbulb,
-  UserCheck, BarChart3, Shield, LogOut, User, Settings
+  UserCheck, BarChart3, Shield, LogOut, User,  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,8 +28,9 @@ const navItems: Record<string, { label: string; path: string; icon: React.ReactN
   ],
   FACULTY: [
     { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { label: 'Proposals', path: '/proposals', icon: <FileText className="w-5 h-5" /> },
+    { label: 'Create Projects', path: '/faculty/proposals', icon: <FileText className="w-5 h-5" /> },
     { label: 'My Projects', path: '/my-projects', icon: <BookOpen className="w-5 h-5" /> },
+    { label: 'Project Management', path: '/team-management', icon: <User className="w-5 h-5" /> },
     { label: 'Notifications', path: '/notifications', icon: <Bell className="w-5 h-5" /> },
   ],
   STUDENT: [
@@ -63,11 +65,16 @@ const roleTheme: Record<string, {
     logoutHover: 'hover:bg-red-500/10 text-red-400',
   },
   FACULTY: {
-    sidebarBg: 'bg-violet-950',
-    brand: 'text-violet-100', brandText: 'Faculty Portal', brandSub: 'text-violet-500/60',
-    activeLink: 'bg-violet-500/15', activeLinkText: 'text-violet-400',
-    avatarBg: 'bg-violet-500/15', avatarText: 'text-violet-400',
-    accent: 'text-violet-400/70 hover:bg-violet-900/50 hover:text-violet-200',
+    // Dark Blue Theme for faculty
+    sidebarBg: 'bg-gradient-to-br from-[#0a0e27] via-[#0f172a] to-[#1a1a3e]',
+    brand: 'text-white', 
+    brandText: 'Faculty Portal', 
+    brandSub: 'text-blue-400/60',
+    activeLink: 'bg-blue-500/15', 
+    activeLinkText: 'text-blue-400',
+    avatarBg: 'bg-blue-500/15', 
+    avatarText: 'text-blue-400',
+    accent: 'text-blue-300/60 hover:bg-blue-900/40 hover:text-blue-300',
     logoutHover: 'hover:bg-red-500/10 text-red-400',
   },
   STUDENT: {
@@ -87,46 +94,67 @@ export const Sidebar: React.FC = () => {
   const theme = roleTheme[user?.role || 'STUDENT'];
 
   return (
-    <aside className={`w-64 ${theme.sidebarBg} h-screen flex flex-col fixed left-0 top-0 z-30`}>
-      {/* Brand */}
+    <aside className={`w-64 ${theme.sidebarBg} h-screen flex flex-col fixed left-0 top-0 z-30 shadow-2xl`}>
+      {/* Brand Section */}
       <div className="p-6 border-b border-white/5">
-        <h1 className={`text-xl font-bold ${theme.brand}`}>{theme.brandText}</h1>
-        <p className={`text-xs mt-1 ${theme.brandSub}`}>{user?.role === 'ADMIN' ? 'Administration' : 'Allocation Platform'}</p>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="p-1.5 bg-white/5 rounded-xl">
+            <Sparkles className="w-5 h-5 text-blue-400" />
+          </div>
+          <h1 className={`text-xl font-bold ${theme.brand} tracking-tight`}>
+            {theme.brandText}
+          </h1>
+        </div>
+        <p className={`text-xs mt-1 ${theme.brandSub}`}>
+          {user?.role === 'ADMIN' ? 'Administration' : user?.role === 'FACULTY' ? 'Faculty Portal' : 'Allocation Platform'}
+        </p>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
         {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) => cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-              isActive ? `${theme.activeLink} ${theme.activeLinkText}` : theme.accent
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group',
+              isActive 
+                ? `${theme.activeLink} ${theme.activeLinkText} shadow-md` 
+                : theme.accent
             )}
           >
-            {item.icon}
+            <div className="transition-transform duration-200 group-hover:scale-110">
+              {item.icon}
+            </div>
             {item.label}
+            {item.label === 'Notifications' && (
+              <span className="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            )}
           </NavLink>
         ))}
       </nav>
 
       {/* Profile & Logout */}
       <div className="p-4 border-t border-white/5 space-y-2">
-        <button onClick={() => navigate('/profile')}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-200 ${theme.accent}`}>
-          <div className={`w-8 h-8 ${theme.avatarBg} rounded-lg flex items-center justify-center ${theme.avatarText} font-bold text-xs`}>
+        <button 
+          onClick={() => navigate('/profile')}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 ${theme.accent} group`}
+        >
+          <div className={`w-9 h-9 ${theme.avatarBg} rounded-xl flex items-center justify-center ${theme.avatarText} font-bold text-sm backdrop-blur-sm transition-transform group-hover:scale-105`}>
             {user?.firstName?.[0]}{user?.lastName?.[0]}
           </div>
           <div className="flex-1 text-left min-w-0">
-            <p className="font-medium text-white/90 truncate text-sm">{user?.firstName} {user?.lastName}</p>
-            <p className="text-xs opacity-50">{user?.role}</p>
+            <p className="font-semibold text-white/90 truncate text-sm">{user?.firstName} {user?.lastName}</p>
+            <p className="text-xs text-white/50">{user?.role}</p>
           </div>
         </button>
 
-        <button onClick={() => { clearAuth(); window.location.href = '/login'; }}
-          className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all duration-200 ${theme.logoutHover}`}>
-          <LogOut className="w-4 h-4" /> Logout
+        <button 
+          onClick={() => { clearAuth(); window.location.href = '/login'; }}
+          className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all duration-300 ${theme.logoutHover}`}
+        >
+          <LogOut className="w-4 h-4" /> 
+          Logout
         </button>
       </div>
     </aside>
